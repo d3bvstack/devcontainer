@@ -1,6 +1,6 @@
 # Dev Container — clone & run
 
-[![Open in Codespaces](https://github.com/codespaces/badges/raw/main/button.svg)](https://github.com/codespaces/new?repo=d3bvstack/devcontainer)
+[![Open in Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?repo=d3bvstack/devcontainer)
 
 Make it easy to reuse this repository's development container in any project — clone this repo (or use the installer script) and `Reopen in Container` from VS Code.
 
