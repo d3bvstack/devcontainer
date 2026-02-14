@@ -4,7 +4,7 @@
 
 Reuse this repository's development container in any project — clone this repo (or use the installer script) and `Reopen in Container` from VS Code.
 
-## Link index
+## Index
 
 - [Quick start](#quick-start)
 - [Usage](#usage)
