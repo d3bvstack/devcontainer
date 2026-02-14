@@ -4,6 +4,15 @@
 
 Make it easy to reuse this repository's development container in any project — clone this repo (or use the installer script) and `Reopen in Container` from VS Code.
 
+## Link index
+
+- [Quick start — copy into an existing project](#quick-start-copy-into-an-existing-project)
+- [Usage](#usage)
+- [Features](#features)
+- [For GitHub Codespaces](#for-github-codespaces)
+- [Installer script](#installer-script)
+- [See also](#see-also)
+
 ## Quick start — copy into an existing project
 
 Option A — use the installer script (recommended):

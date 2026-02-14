@@ -2,6 +2,17 @@
 
 This workspace provides a standardized, lightweight development environment based on **Debian 12.13-slim**, optimized for Python and systems-level development.
 
+## Link index
+
+- [Key Features](#key-features)
+- [Available Tools](#available-tools)
+- [Networking](#networking)
+- [User & permissions](#user-permissions)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [How to Use](#how-to-use)
+- [Use this devcontainer in another project](#use-this-devcontainer-in-another-project)
+
 ## Key Features
 
 - **SSH Agent Forwarding**: Seamlessly use your host's SSH keys within the container. The `SSH_AUTH_SOCK` is automatically mounted to `/ssh-agent.sock`, enabling Git operations and remote access without exposing sensitive keys.
@@ -25,6 +36,7 @@ The environment includes a curated set of tools installed both in the base image
 - **Default Port**: Port **8000** is forwarded by default. Any service running on this port inside the container will be accessible at `http://localhost:8000` on your host.
 - **Port Management**: If Port 8000 is occupied, VS Code will automatically remap it (check the **Ports** view). You can expose additional ports by updating the `forwardPorts` array in [`devcontainer.json`](devcontainer.json).
 
+<a id="user-permissions"></a>
 ## User & permissions
 
 - **Default behavior**: The container runs as your **host user** by default (username + UID/GID are synced). If VS Code cannot obtain the host user info, it falls back to the `vscode` user.
