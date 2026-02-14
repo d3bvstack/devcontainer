@@ -4,9 +4,9 @@ ARG USERNAME=vscode
 ARG USER_UID=1000
 ARG USER_GID=1000
 
-# Allow passing empty build args from some environments; set defaults at build time if empty
-RUN if [ -z "${USER_UID}" ] || [ "${USER_UID}" = "" ]; then USER_UID=1000; fi \
- && if [ -z "${USER_GID}" ] || [ "${USER_GID}" = "" ]; then USER_GID=1000; fi \
+# Validate USER_UID/USER_GID are numeric (no negatives); default to 1000 if invalid
+RUN case "$USER_UID" in ''|*[!0-9]*) USER_UID=1000 ;; esac \
+ && case "$USER_GID" in ''|*[!0-9]*) USER_GID=1000 ;; esac \
  && echo "Using build UID:GID -> ${USER_UID}:${USER_GID} (user=${USERNAME})"
 
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
