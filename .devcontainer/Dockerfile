@@ -23,7 +23,7 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && if ! id -u "$USERNAME" >/dev/null 2>&1; then useradd -s /bin/bash -m --uid "$USER_UID" --gid "$USER_GID" "$USERNAME"; fi \
     && echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USERNAME \
     && chmod 0440 /etc/sudoers.d/$USERNAME \
-    && rm -rf /var/lib/apt/lists/*
+    && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 ENV HOME=/home/${USERNAME}
 ENV PATH=${HOME}/.local/bin:${PATH}
