@@ -4,8 +4,8 @@
     "dockerfile": "Dockerfile",
     "context": ".."
     ,"args": {
-      "USER_UID": "${localEnv:UID:-1000}",
-      "USER_GID": "${localEnv:GID:-1000}",
+      "USER_UID": "1000",
+      "USER_GID": "1000",
       "USERNAME": "vscode"
     }
   },
@@ -21,13 +21,7 @@
   },
   "postCreateCommand": "sudo apt-get update && sudo apt-get install -y --no-install-recommends build-essential python3-pip fzf zip unzip procps iproute2 iputils-ping && sudo apt-get clean && sudo rm -rf /var/lib/apt/lists/*",
   "forwardPorts": [8000],
-  "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind,consistency=cached",
-  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
   "updateRemoteUserUID": true,
-
-  "remoteEnv": {
-    "SSH_AUTH_SOCK": "/ssh-agent.sock"
-  },
 
   "remoteUser": "vscode"
 }
