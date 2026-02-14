@@ -61,3 +61,25 @@ The environment includes a curated set of tools installed both in the base image
 ---
 *For modifications, see [Dockerfile](Dockerfile) for system-level changes or [devcontainer.json](devcontainer.json) for VS Code settings and lifecycle hooks.*
 
+## Use this devcontainer in another project
+
+You can reuse the `.devcontainer` from this repository in any project:
+
+- Quick installer (recommended):
+
+```bash
+# run from inside your project folder
+curl -fsSL https://raw.githubusercontent.com/d3bvstack/devcontainer/master/install-devcontainer.sh | bash -s -- .
+```
+
+- As a git submodule:
+
+```bash
+git submodule add https://github.com/d3bvstack/devcontainer.git .devcontainer
+```
+
+- Open the target project in VS Code and run **Dev Containers: Reopen in Container**.
+
+This repository is compatible with GitHub Codespaces (use the **Open in Codespaces** badge in the root README to launch one).
+
+
