@@ -15,7 +15,7 @@ This workspace provides a standardized, lightweight development environment base
 
 ## Key Features
 
-- **SSH Agent Forwarding**: Seamlessly use your host's SSH keys within the container. The `SSH_AUTH_SOCK` is automatically mounted to `/ssh-agent.sock`, enabling Git operations and remote access without exposing sensitive keys.
+- **SSH Agent Forwarding**: Seamlessly use your host's SSH keys within the container. If correctly configured on your host, the `SSH_AUTH_SOCK` can be mounted to enable Git operations and remote access without exposing sensitive keys.
 - **Dynamic User Mapping**: Automated UID/GID synchronization ensures that file permissions inside the container match your host user, preventing "permission denied" issues when editing workspace files.
 - **VS Code Integration**:
     - **Default Shell**: Pre-configured to use `bash`.

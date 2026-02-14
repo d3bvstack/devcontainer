@@ -25,9 +25,6 @@
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
   "updateRemoteUserUID": true,
 
-  "mounts": [
-    "source=${localEnv:SSH_AUTH_SOCK},target=/ssh-agent.sock,type=bind,consistency=cached"
-  ],
   "remoteEnv": {
     "SSH_AUTH_SOCK": "/ssh-agent.sock"
   },
