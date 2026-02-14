@@ -39,13 +39,13 @@ The environment includes a curated set of tools installed both in the base image
 <a id="user-permissions"></a>
 ## User & permissions
 
-- **Default behavior**: The container runs as your **host user** by default (username + UID/GID are synced). If VS Code cannot obtain the host user info, it falls back to the `vscode` user.
+- **Default behavior**: The container runs as the `vscode` user by default. UID/GID synchronization is enabled to ensure file permissions inside the container match your host user, preventing "permission denied" issues when editing workspace files.
 
 - **Where this is configured**:
   - In `devcontainer.json`:
-    - `"remoteUser": "${localEnv:USER:-vscode}"`
+    - `"remoteUser": "vscode"`
     - `"updateRemoteUserUID": true` (ensures UID/GID sync)
-  - In `Dockerfile`: build args `USER_UID`, `USER_GID`, `USERNAME` are used to create the container user with matching UID/GID and grant passwordless `sudo`.
+  - In `Dockerfile`: build args `USER_UID`, `USER_GID`, `USERNAME` are used to create the container user with matching UID/GID and grant passwordless `sudo`. Numeric validation is in place to handle invalid or negative IDs gracefully.
 
 - **How to verify inside the container**:
   - `echo $USER`

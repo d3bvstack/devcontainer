@@ -6,7 +6,7 @@
     ,"args": {
       "USER_UID": "${localEnv:UID:-1000}",
       "USER_GID": "${localEnv:GID:-1000}",
-      "USERNAME": "${localEnv:USER:-vscode}"
+      "USERNAME": "vscode"
     }
   },
   "customizations": {
@@ -32,5 +32,5 @@
     "SSH_AUTH_SOCK": "/ssh-agent.sock"
   },
 
-  "remoteUser": "${localEnv:USER:-vscode}"
+  "remoteUser": "vscode"
 }
