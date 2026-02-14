@@ -9,8 +9,11 @@ RUN if [ -z "${USER_UID}" ] || [ "${USER_UID}" = "" ]; then USER_UID=1000; fi \
  && if [ -z "${USER_GID}" ] || [ "${USER_GID}" = "" ]; then USER_GID=1000; fi \
  && echo "Using build UID:GID -> ${USER_UID}:${USER_GID} (user=${USERNAME})"
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
+    && apt-get upgrade \
+    && apt-get install -y --no-install-recommends \
     git \
+    openssh-client \
     curl \
     locales \
     ca-certificates \

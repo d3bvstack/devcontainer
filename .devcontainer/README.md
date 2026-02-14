@@ -1,123 +1,63 @@
 # Development Container
 
-This directory contains a pre-configured development environment for Visual Studio Code. It ensures a consistent setup across different machines by isolating dependencies and configuration within a Docker container.
+This workspace provides a standardized, lightweight development environment based on **Debian 12.13-slim**, optimized for Python and systems-level development.
 
-## Overview
+## Key Features
 
-The environment is built on **Debian 12 (Bookworm)** and is tailored for general-purpose backend development, with a focus on Python and system-level utilities.
+- **SSH Agent Forwarding**: Seamlessly use your host's SSH keys within the container. The `SSH_AUTH_SOCK` is automatically mounted to `/ssh-agent.sock`, enabling Git operations and remote access without exposing sensitive keys.
+- **Dynamic User Mapping**: Automated UID/GID synchronization ensures that file permissions inside the container match your host user, preventing "permission denied" issues when editing workspace files.
+- **VS Code Integration**:
+    - **Default Shell**: Pre-configured to use `bash`.
+    - **Extensions**: Includes [`Doxygen Documentation Generator`](https://marketplace.visualstudio.com/items?itemName=cschlosser.doxdocgen) (`cschlosser.doxdocgen`) for standardized code documentation.
+- **Non-Root Access**: Runs as the `vscode` user with full passwordless `sudo` privileges for administrative tasks.
 
-### Included tools (what's in-image vs post-create)
+## Available Tools
 
-The Docker image and the `postCreateCommand` together provide the development toolset. The table below clarifies where each package is installed (image vs post-create):
+The environment includes a curated set of tools installed both in the base image and during the "hydration" phase (`postCreateCommand`):
 
-| Category | Tools (where installed) | Purpose |
-| :--- | :--- | :--- |
-| **Compiler** | `build-essential` (post-create) | GCC/G++/Make for compiling C-extensions (e.g., `numpy`, `cryptography`). |
-| **Python** | `python3` (in-image), `python3-pip` (post-create) | Python runtime and package manager. |
-| **Productivity** | `git`, `curl` (in-image); `fzf` (post-create) | Version control, HTTP client, fuzzy-finder. |
-| **Diagnostics** | `procps`, `iproute2`, `iputils-ping` (post-create) | Process and network debugging (`ps`, `top`, `ping`). |
-| **Archives** | `zip`, `unzip` (post-create) | Handling compressed artifacts and deployment packages. |
+- **Development**: `git`, `openssh-client`, `curl`, `build-essential` (GCC/G++/Make).
+- **Python**: `python3`, `python3-pip`.
+- **Productivity & Utilities**: `fzf` (fuzzy finder), `zip`, `unzip`, `procps` (`ps`, `top`).
+- **Networking**: `iproute2`, `iputils-ping`, `ca-certificates`.
 
-See `.devcontainer/Dockerfile` for packages baked into the image and `.devcontainer/devcontainer.json` for additional tooling installed by the `postCreateCommand`.
+## Networking
+
+- **Default Port**: Port **8000** is forwarded by default. Any service running on this port inside the container will be accessible at `http://localhost:8000` on your host.
+- **Port Management**: If Port 8000 is occupied, VS Code will automatically remap it (check the **Ports** view). You can expose additional ports by updating the `forwardPorts` array in [`devcontainer.json`](devcontainer.json).
+
+## User & permissions
+
+- **Default behavior**: The container runs as your **host user** by default (username + UID/GID are synced). If VS Code cannot obtain the host user info, it falls back to the `vscode` user.
+
+- **Where this is configured**:
+  - In `devcontainer.json`:
+    - `"remoteUser": "${localEnv:USER:-vscode}"`
+    - `"updateRemoteUserUID": true` (ensures UID/GID sync)
+  - In `Dockerfile`: build args `USER_UID`, `USER_GID`, `USERNAME` are used to create the container user with matching UID/GID and grant passwordless `sudo`.
+
+- **How to verify inside the container**:
+  - `echo $USER`
+  - `id -u -n && id -u && id -g`
+
+- **How to force a specific user**:
+  - To force the `vscode` user: set `"remoteUser": "vscode"` in `devcontainer.json` and rebuild the container.
+  - To run as a different user, set `"remoteUser"` to that username (ensure the user exists in the image) and rebuild.
+
+> ⚠️ Note: Changing `remoteUser` or UID/GID mapping requires rebuilding the container (use **Dev Containers: Rebuild Container** from the Command Palette).
 
 ## Getting Started
 
 ### Prerequisites
+- [Docker Desktop](https://www.docker.com/products/docker-desktop) (or Docker Engine on Linux).
+- [Visual Studio Code](https://code.visualstudio.com/).
+- [Dev Containers Extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers).
 
-1. **Docker Desktop** (or Docker Engine on Linux).
-2. **Visual Studio Code**.
-3. **Dev Containers Extension** ([ms-vscode-remote.remote-containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)).
+### How to Use
 
-### How to use
+1. **Open Workspace**: Open the project root folder in VS Code.
+2. **Reopen in Container**: When prompted, click **Reopen in Container**. Alternatively, press `F1` and run `Dev Containers: Reopen in Container`.
+3. **Wait for Setup**: The first build handles the image pull and runs the `postCreateCommand` to install additional utilities.
 
-#### Method 1: VS Code (Recommended)
-1. Open the project root folder in VS Code.
-2. When prompted with "Reopen in Container", click **Reopen**.
-   - *Alternatively: Press `F1`, type `Dev Containers: Reopen in Container`, and select it.*
-3. VS Code will build the image and start the container. The first build may take a few minutes as it downloads the base image and runs the `postCreateCommand` defined in `.devcontainer/devcontainer.json`.
+---
+*For modifications, see [Dockerfile](Dockerfile) for system-level changes or [devcontainer.json](devcontainer.json) for VS Code settings and lifecycle hooks.*
 
-#### Method 2: GitHub Codespaces
-This repository is fully compatible with GitHub Codespaces.
-- Click the **Code** button on the GitHub repository page.
-- Select the **Codespaces** tab and click **Create codespace on master**.
-- Port 8000 will be automatically forwarded and accessible via the browser.
-
-#### Method 3: Dev Container CLI
-For headless environments or CI/CD, use the official `@devcontainers/cli`:
-```bash
-# Install the CLI
-npm install -g @devcontainers/cli
-
-# Build and start the container
-devcontainer up --workspace-folder .
-
-# Exec a command inside
-devcontainer exec --workspace-folder . /bin/bash
-```
-
-#### Method 4: Manual Docker CLI
-If you need to build the image independently of the Dev Container specification:
-```bash
-# Recommended: build from the repository root and point to the Dockerfile in .devcontainer
-docker build -f .devcontainer/Dockerfile -t my-dev-image . \
-  --build-arg USERNAME=$(whoami) \
-  --build-arg USER_UID=$(id -u) \
-  --build-arg USER_GID=$(id -g)
-
-# Alternative: build using the .devcontainer folder as the context (Dockerfile-only)
-# docker build -t my-dev-image .devcontainer \
-#   --build-arg USERNAME=$(whoami) \
-#   --build-arg USER_UID=$(id -u) \
-#   --build-arg USER_GID=$(id -g)
-
-# Run the container
-docker run -it --rm \
-  -v $(pwd):/workspaces/workspace \
-  -w /workspaces/workspace \
-  -p 8000:8000 \
-  my-dev-image /bin/bash
-```
-
-## Configuration Details
-
-### Port Forwarding & Conflicts
-The environment is pre-configured to forward **Port 8000** (see the `forwardPorts` setting in `.devcontainer/devcontainer.json`). Any web server (e.g., Django, FastAPI, Flask) running on this port inside the container will be accessible at `http://localhost:8000` on your host machine.
-
-#### Managing Conflicts
-If port `8000` is already in use on your host machine:
-- **Automatic Remapping**: VS Code will often detect the collision and automatically map the container's port to a different available port on your host (e.g., `8001`). You can verify the actual mapping in VS Code's **Ports** view.
-- **Manual Change**: To permanently change the forwarded port, update the `forwardPorts` array in [.devcontainer/devcontainer.json](devcontainer.json).
-
-#### Adding Additional Ports
-To expose more services (like a database or a second web app), list them in the `forwardPorts` array:
-```json
-"forwardPorts": [8000, 5432, 6379]
-```
-
-### User & Permissions
-The container runs as a non-root user (defaults to `vscode`, but can be overridden by the host's `$USER` environment variable).
-- **UID/GID Mapping**: The `.devcontainer/Dockerfile` accepts `USER_UID`/`USER_GID` build arguments (and `devcontainer.json` passes your host UID/GID) so the container user matches your host — this prevents permission issues when editing mounted files.
-- **Sudo Access**: The configured user has passwordless sudo privileges for administrative tasks.
-
-## Customization
-
-### VS Code Extensions & Settings
-You can tailor the editor experience within the container by editing `customizations.vscode` in `.devcontainer/devcontainer.json`:
-- **Extensions**: Add extension IDs to the `extensions` array.
-- **Settings**: Add machine-specific or workspace settings to the `settings` object. These will override your local settings while in the container.
-
-### Lifecycle Hooks
-The environment supports several hooks in [devcontainer.json](devcontainer.json) for advanced setup:
-1. **`onCreateCommand`**: Runs when the container is first created.
-2. **`updateContentCommand`**: Runs whenever the container is resumed or workspace content changes.
-3. **`postCreateCommand`**: (Used) Runs after the container is created and the user is connected.
-4. **`postStartCommand`**: Runs every time the container starts.
-
-### Environment Variables
-To inject environment variables:
-- **`containerEnv`**: Variables available to all processes in the container.
-- **`remoteEnv`**: Variables specifically for VS Code and its sub-processes (terminals, etc.).
-
-### Modifying the File System
-- **Persistent Changes**: For global tools or OS-level configurations, edit the [Dockerfile](Dockerfile).
-- **Transient Tools**: For project-specific dependencies (like `pip install`), use the `postCreateCommand` in `.devcontainer/devcontainer.json`.
