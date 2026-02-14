@@ -15,12 +15,11 @@ This workspace provides a standardized, lightweight development environment base
 
 ## Key Features
 
-- **SSH Agent Forwarding**: Seamlessly use your host's SSH keys within the container. If correctly configured on your host, the `SSH_AUTH_SOCK` can be mounted to enable Git operations and remote access without exposing sensitive keys.
-- **Dynamic User Mapping**: Automated UID/GID synchronization ensures that file permissions inside the container match your host user, preventing "permission denied" issues when editing workspace files.
+- **Robust User Mapping**: Automated UID/GID synchronization ensures file permissions match your host user. The build process includes numeric validation to handle missing or invalid host IDs gracefully, defaulting to `1000`.
 - **VS Code Integration**:
     - **Default Shell**: Pre-configured to use `bash`.
     - **Extensions**: Includes [`Doxygen Documentation Generator`](https://marketplace.visualstudio.com/items?itemName=cschlosser.doxdocgen) (`cschlosser.doxdocgen`) for standardized code documentation.
-- **Non-Root Access**: Runs as the `vscode` user with full passwordless `sudo` privileges for administrative tasks.
+- **Non-Root Access**: Runs as the `vscode` user with full passwordless `sudo` privileges.
 
 ## Available Tools
 
@@ -39,23 +38,23 @@ The environment includes a curated set of tools installed both in the base image
 <a id="user-permissions"></a>
 ## User & permissions
 
-- **Default behavior**: The container runs as the `vscode` user by default. UID/GID synchronization is enabled to ensure file permissions inside the container match your host user, preventing "permission denied" issues when editing workspace files.
+- **Default behavior**: The container runs as the `vscode` user. UID/GID synchronization remains enabled (`updateRemoteUserUID: true`) to ensure file permissions match your host user.
 
 - **Where this is configured**:
   - In `devcontainer.json`:
     - `"remoteUser": "vscode"`
-    - `"updateRemoteUserUID": true` (ensures UID/GID sync)
-  - In `Dockerfile`: build args `USER_UID`, `USER_GID`, `USERNAME` are used to create the container user with matching UID/GID and grant passwordless `sudo`. Numeric validation is in place to handle invalid or negative IDs gracefully.
+    - `"updateRemoteUserUID": true`
+    - Build args `USER_UID` and `USER_GID` are set to `1000` for consistent builds.
+  - In `Dockerfile`: The build process validates that the UID/GID are numeric and non-negative, preventing failures when host environment variables are unavailable.
 
 - **How to verify inside the container**:
   - `echo $USER`
-  - `id -u -n && id -u && id -g`
+  - `id -u && id -g`
 
 - **How to force a specific user**:
-  - To force the `vscode` user: set `"remoteUser": "vscode"` in `devcontainer.json` and rebuild the container.
-  - To run as a different user, set `"remoteUser"` to that username (ensure the user exists in the image) and rebuild.
+  - To run as a different user, set `"remoteUser"` in `devcontainer.json` to that username (ensure the user exists in the image) and rebuild.
 
-> ⚠️ Note: Changing `remoteUser` or UID/GID mapping requires rebuilding the container (use **Dev Containers: Rebuild Container** from the Command Palette).
+> ⚠️ Note: Changing `remoteUser` requires rebuilding the container (use **Dev Containers: Rebuild Container** from the Command Palette).
 
 ## Getting Started
 

@@ -43,9 +43,9 @@ cp -r path/to/devcontainer/.devcontainer ./
 
 ## Features
 
-- UID/GID sync so files created in-container match your host user.
-- SSH agent forwarding (SSH_AUTH_SOCK mounted).
-- Debian-slim base with common dev tools installed via `postCreateCommand`.
+- **Reliable User Mapping**: Built-in validation ensures the container always starts with a valid UID/GID (defaulting to 1000).
+- **Hardened Configuration**: Minimized `devcontainer.json` to reduce host environment dependencies.
+- **Debian-slim Base**: Includes common dev tools installed via `postCreateCommand`.
 
 ## For GitHub Codespaces
 
